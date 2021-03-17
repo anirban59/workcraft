@@ -70,7 +70,7 @@ public class ScenarioTable extends JTable {
             if (value instanceof String) {
                 label.setText((String) value);
             } else if (value instanceof ScenarioRef) {
-                label.setText("Senario " + (row + 1));
+                label.setText("Scenario " + (row + 1));
             } else {
                 return null;
             }

@@ -453,6 +453,24 @@ public class BSONAlg extends RelationAlgorithm {
     }
 
     /**
+     * get the base level ONs from a given set of ONs (Ani).
+     */
+    public Collection<ONGroup> getBaseLevelONs(Collection<ONGroup> ONs) {
+        Collection<ONGroup> result = new HashSet<>();
+
+        for (ONGroup ON : ONs) {
+            boolean isInput = false;
+            for (Node node : ON.getComponents())
+                if (net.getInputSONConnectionTypes((MathNode) node).contains(Semantics.BHVLINE))
+                    isInput = true;
+
+            if (!isInput)
+                result.add(ON);
+        }
+        return result;
+    }
+
+    /**
      * get minimal phase for a given phase
      */
     public ArrayList<Condition> getMinimalPhase(Phase phase) {

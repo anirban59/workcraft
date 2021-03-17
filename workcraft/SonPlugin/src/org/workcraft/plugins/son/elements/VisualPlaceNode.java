@@ -20,6 +20,9 @@ public class VisualPlaceNode extends VisualComponent {
     protected Font errorFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
     protected Font timeFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.35f);
 
+    protected Font probabilityFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.35f);
+    protected static String nDP = "%.2f"; // used to restrict display of a float or double to 2 decimal places.
+
     protected Positioning errLabelPositioning = Positioning.BOTTOM;
     protected RenderedText errorRenderedText = new RenderedText("", errorFont, errLabelPositioning, new Point2D.Double(0.0, 0.0));
     protected Color errLabelColor = SONSettings.getErrLabelColor();
@@ -27,12 +30,15 @@ public class VisualPlaceNode extends VisualComponent {
     private static final Positioning durationLabelPositioning = Positioning.BOTTOM;
     private RenderedText durationRenderedText = new RenderedText("", timeFont, durationLabelPositioning, new Point2D.Double(0.0, 0.0));
 
+    private static final Positioning probabilityLabelPositioning = Positioning.BOTTOM_RIGHT;
+    private RenderedText probabilityRenderedText = new RenderedText("", probabilityFont, probabilityLabelPositioning, new Point2D.Double(0.0, 0.0));
+
     private String value = "";
 
     private static double size = VisualCommonSettings.getNodeSize();
     private static double strokeWidth = VisualCommonSettings.getStrokeWidth();
     private static double singleTokenSize = VisualCommonSettings.getNodeSize() / 1.9;
-    protected static double labelOffset = 0.5;
+    protected static double labelOffset = 0.0;
 
     public VisualPlaceNode(PlaceNode refNode) {
         super(refNode);
@@ -75,6 +81,7 @@ public class VisualPlaceNode extends VisualComponent {
         drawToken(r);
         drawErrorInLocalSpace(r);
         drawDurationInLocalSpace(r);
+        drawProbabilityInLocalSpace(r);
         drawLabelInLocalSpace(r);
         drawNameInLocalSpace(r);
     }
@@ -148,11 +155,38 @@ public class VisualPlaceNode extends VisualComponent {
         }
     }
 
+    private void cacheProbabilityRenderedText() {
+        String probability = "P: " + String.format(nDP, getProbability());
+
+        Point2D offset = getOffset(probabilityLabelPositioning);
+        if (probabilityLabelPositioning.ySign < 0) {
+            offset.setLocation(offset.getX(), offset.getY() - labelOffset);
+        }
+        else {
+            offset.setLocation(offset.getX(), offset.getY() + labelOffset);
+        }
+
+        if (probabilityRenderedText.isDifferent(probability, probabilityFont, probabilityLabelPositioning, offset)) {
+            probabilityRenderedText = new RenderedText(probability, probabilityFont, probabilityLabelPositioning, offset);
+        }
+    }
+
+    protected void drawProbabilityInLocalSpace(DrawRequest r) {
+        if (SONSettings.getProbabilityVisibility()) {
+            cacheProbabilityRenderedText();
+            Graphics2D g = r.getGraphics();
+            Decoration d = r.getDecoration();
+            g.setColor(ColorUtils.colorise(getProbabilityColor(), d.getColorisation()));
+            probabilityRenderedText.draw(g);
+        }
+    }
+
     @Override
     public void cacheRenderedText(DrawRequest r) {
         super.cacheRenderedText(r);
         cahceErrorRenderedText();
         cahceDurationRenderedText();
+        cacheProbabilityRenderedText();
     }
 
     @Override
@@ -164,6 +198,9 @@ public class VisualPlaceNode extends VisualComponent {
         }
         if (SONSettings.getTimeVisibility() && getReferencedComponent().getDuration().isSpecified()) {
             bb = BoundingBoxHelper.union(bb, durationRenderedText.getBoundingBox());
+        }
+        if (SONSettings.getProbabilityVisibility()){
+            bb = BoundingBoxHelper.union(bb, probabilityRenderedText.getBoundingBox());
         }
 
         return bb;
@@ -297,5 +334,13 @@ public class VisualPlaceNode extends VisualComponent {
             setMarked(srcComponent.isMarked());
         }
     }
+
+    public double getProbability() { return getReferencedComponent().getProbability(); }
+
+    public void setProbability(double value) { getReferencedComponent().setProbability(value); }
+
+    public Color getProbabilityColor() { return getReferencedComponent().getProbabilityColor(); }
+
+    public void setProbabilityColor(Color value) { getReferencedComponent().setProbabilityColor(value); }
 
 }

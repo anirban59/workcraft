@@ -24,8 +24,16 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode {
     private static final Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
     protected Font timeFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.35f);
 
+    protected Font probabilityFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.35f);
+
     private static final Positioning durationLabelPositioning = Positioning.BOTTOM;
     private RenderedText durationRenderedText = new RenderedText("", font, durationLabelPositioning, new Point2D.Double(0.0, 0.0));
+
+    private static final Positioning weightLabelPositioning = Positioning.TOP_RIGHT;
+    private RenderedText weightRenderedText = new RenderedText("", font, weightLabelPositioning, new Point2D.Double(0.0, 0.0));
+
+    private static final Positioning probabilityLabelPositioning = Positioning.BOTTOM_RIGHT;
+    private RenderedText probabilityRenderedText = new RenderedText("", font, probabilityLabelPositioning, new Point2D.Double(0.0, 0.0));
 
     public VisualBlock(Block refNode) {
         super(refNode);
@@ -72,6 +80,8 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode {
             drawNameInLocalSpace(r);
             drawLabelInLocalSpace(r);
             drawDurationInLocalSpace(r);
+            // drawWeightInLocalSpace(r);
+            // drawProbabilityInLocalSpace(r);
         }
     }
 

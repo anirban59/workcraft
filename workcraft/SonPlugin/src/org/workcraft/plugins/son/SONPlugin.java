@@ -42,6 +42,8 @@ public class SONPlugin implements Plugin {
         pm.registerCommand(TimeValueDisablerCommand.class);
         //pm.registerTool(TimeValueEstimator.class);
         pm.registerCommand(TimeConsistencyCheckerCommand.class);
+        // Probability analysis
+        pm.registerCommand(ProbabilityValueDisablerCommand.class);
     }
 
     private void initCompatibilityManager() {

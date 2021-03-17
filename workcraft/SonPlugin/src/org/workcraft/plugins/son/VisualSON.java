@@ -20,6 +20,7 @@ import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.tools.NodeGeneratorTool;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
+import org.workcraft.plugins.son.algorithm.ProbabilityCalcAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
@@ -628,6 +629,14 @@ public class VisualSON extends AbstractVisualModel {
                 properties.add(getEndTimeProperty(time));
                 properties.add(getDurationProperty(time));
             }
+            if (component.getReferencedComponent() instanceof Event) {
+                Event event = (Event) component.getReferencedComponent();
+                properties.add(getWeightProperty(event));
+            }
+            if (component.getReferencedComponent() instanceof Probability) {
+                Probability probability = (Probability) component.getReferencedComponent();
+                properties.add(getProbabilityProperty(probability));
+            }
         }
         return properties;
     }
@@ -657,6 +666,20 @@ public class VisualSON extends AbstractVisualModel {
         return new PropertyDeclaration<>(String.class, Time.PROPERTY_DURATION,
                 value -> time.setDuration(new Interval(value)),
                 () -> time.getDuration().toString())
+                .setReadonly();
+    }
+
+    private PropertyDescriptor getWeightProperty(Event event) {
+        return new PropertyDeclaration<>(Integer.class, "Weight",
+                value -> event.setWeight(value),
+                () -> event.getWeight())
+                .setTemplatable();
+    }
+
+    private PropertyDescriptor getProbabilityProperty(Probability probability) {
+        return new PropertyDeclaration<>(Double.class, Probability.PROPERTY_PROBABILITY,
+                value -> probability.setProbability(value),
+                () -> probability.getProbability())
                 .setReadonly();
     }
 

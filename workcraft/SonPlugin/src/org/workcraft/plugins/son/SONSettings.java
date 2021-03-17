@@ -29,6 +29,8 @@ public class SONSettings extends AbstractModelSettings {
     private static final boolean defaultTimeVisibility = false;
     private static final boolean defaultErrorTracing = false;
 
+    private static final boolean defaultProbabilityVisibility = false;
+
     private static Color relationErrColor = defaultRelationErrColor;
     private static Color cyclePathColor = defaultCyclePathColor;
     private static Color connectionErrColor = defaultConnectionErrColor;
@@ -36,6 +38,8 @@ public class SONSettings extends AbstractModelSettings {
     private static Color groupForegroundColor = defaultGroupForegroundColor;
     private static boolean timeVisibility = defaultTimeVisibility;
     private static boolean errorTracing = defaultErrorTracing;
+
+    private static boolean probabilityVisibility = defaultProbabilityVisibility;
 
     static {
         properties.add(new PropertyDeclaration<>(Color.class,
@@ -150,5 +154,11 @@ public class SONSettings extends AbstractModelSettings {
     public static void setErrorTracing(boolean value) {
         errorTracing = value;
     }
+
+    public static boolean getProbabilityVisibility() {
+        return probabilityVisibility;
+    }
+
+    public static void setProbabilityVisibility(boolean value) { probabilityVisibility = value; }
 
 }

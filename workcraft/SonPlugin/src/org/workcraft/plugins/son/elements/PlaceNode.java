@@ -7,7 +7,7 @@ import org.workcraft.plugins.son.util.Interval;
 
 import java.awt.*;
 
-public class PlaceNode extends MathNode implements Time {
+public class PlaceNode extends MathNode implements Time, Probability {
 
     private Color foregroundColor = VisualCommonSettings.getBorderColor();
     private Color fillColor = VisualCommonSettings.getFillColor();
@@ -22,6 +22,9 @@ public class PlaceNode extends MathNode implements Time {
 
     private boolean marked = false;
     private Color tokenColor = VisualCommonSettings.getBorderColor();
+
+    private double  probability; // probability of occurrence of this PlaceNode
+    protected Color probabilityColor = Color.BLACK;
 
     public void setMarked(boolean value) {
         if (marked != value) {
@@ -124,16 +127,27 @@ public class PlaceNode extends MathNode implements Time {
     }
 
     @Override
-    public Interval getDuration() {
-        return duration;
-    }
+    public Interval getDuration() { return duration; }
 
     public Color getDurationColor() {
         return durationColor;
     }
 
-    public void setDurationColor(Color value) {
-        this.durationColor = value;
+    public void setDurationColor(Color value) { this.durationColor = value; }
+
+    @Override
+    public void setProbability(double value) {
+        if (this.probability != value) {
+            this.probability = value;
+            sendNotification(new PropertyChangedEvent(this, Probability.PROPERTY_PROBABILITY));
+        }
     }
+
+    @Override
+    public double getProbability() { return this.probability; }
+
+    public Color getProbabilityColor() { return probabilityColor; }
+
+    public void setProbabilityColor(Color value) { this.probabilityColor = value; }
 
 }

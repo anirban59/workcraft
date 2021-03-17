@@ -37,6 +37,7 @@ public class VisualChannelPlace extends VisualPlaceNode {
         drawToken(r);
         drawErrorInLocalSpace(r);
         drawDurationInLocalSpace(r);
+        drawProbabilityInLocalSpace(r);
         drawLabelInLocalSpace(r);
         drawNameInLocalSpace(r);
     }

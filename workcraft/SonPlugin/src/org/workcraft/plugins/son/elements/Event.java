@@ -11,7 +11,7 @@ import java.awt.*;
 
 @IdentifierPrefix("e")
 @VisualClass (org.workcraft.plugins.son.elements.VisualEvent.class)
-public class Event extends MathNode implements TransitionNode, Time {
+public class Event extends MathNode implements TransitionNode, Time, Probability {
 
     private Color foregroundColor = VisualCommonSettings.getBorderColor();
     private Color fillColor = VisualCommonSettings.getFillColor();
@@ -21,6 +21,10 @@ public class Event extends MathNode implements TransitionNode, Time {
     private Interval statTime = new Interval(0, 9999);
     private Interval endTime = new Interval(0, 9999);
     private Interval duration = new Interval(0, 0);
+
+    private int     weight = 1;  // user-specified weight of this Event
+    private double  probability; // probability of occurrence of this Event
+    protected Color probabilityColor = Color.BLACK;
 
     @Override
     public void setLabel(String value) {
@@ -93,6 +97,26 @@ public class Event extends MathNode implements TransitionNode, Time {
         return duration;
     }
 
+    public void setWeight(int value) {
+        if (this.weight != value) {
+            this.weight = value;
+            sendNotification(new PropertyChangedEvent(this, "weight"));
+        }
+    }
+
+    public int getWeight() { return this.weight; }
+
+    @Override
+    public void setProbability(double value) {
+        if (this.probability != value) {
+            this.probability = value;
+            sendNotification(new PropertyChangedEvent(this, Probability.PROPERTY_PROBABILITY));
+        }
+    }
+
+    @Override
+    public double getProbability() { return this.probability; }
+
     @Override
     public void setForegroundColor(Color value) {
         if (!foregroundColor.equals(value)) {
@@ -113,5 +137,9 @@ public class Event extends MathNode implements TransitionNode, Time {
     public Color getFillColor() {
         return fillColor;
     }
+
+    public Color getProbabilityColor() { return probabilityColor; }
+
+    public void setProbabilityColor(Color value) { this.probabilityColor = value; }
 
 }

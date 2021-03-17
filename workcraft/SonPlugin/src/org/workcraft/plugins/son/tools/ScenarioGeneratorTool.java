@@ -41,8 +41,8 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
 
         @Override
         public String getColumnName(int column) {
-            if (column == 0) return "Save List";
-            return "Scenario";
+            if (column == 0) return "Scenarios";
+            return "Trace";
         }
 
         @Override
