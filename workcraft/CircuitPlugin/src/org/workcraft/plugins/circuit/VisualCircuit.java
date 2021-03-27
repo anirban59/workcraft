@@ -269,10 +269,8 @@ public class VisualCircuit extends AbstractVisualModel {
 
     private VisualFunctionContact createContact(VisualFunctionComponent component, String name, Contact.IOType ioType) {
         VisualFunctionContact result = new VisualFunctionContact(new FunctionContact(ioType));
-        result.setDefaultDirection();
         component.addContact(result);
         setMathName(result, name);
-
         VisualContact.Direction direction = (ioType == Contact.IOType.INPUT) ? VisualContact.Direction.WEST : VisualContact.Direction.EAST;
         component.setPositionByDirection(result, direction, false);
         return result;
@@ -374,7 +372,7 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     private PropertyDescriptor getRefinementProperty(VisualFunctionComponent component) {
-        return new PropertyDeclaration<>(FileReference.class, CircuitComponent.PROPERTY_REFINEMENT + "!",
+        return new PropertyDeclaration<>(FileReference.class, CircuitComponent.PROPERTY_REFINEMENT,
                 value -> setRefinementIfCompatible(component, value),
                 () -> component.getReferencedComponent().getRefinement());
     }
