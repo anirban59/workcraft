@@ -7,12 +7,12 @@ plugins {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 subprojects {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     apply plugin: 'java'
@@ -150,6 +150,7 @@ subprojects {
     }
 
     cpdCheck {
+        dependsOn compileJavacc
         source = sourceSets.main.allJava
         exclude gradle.javaccExclude
     }
@@ -200,10 +201,9 @@ checkLicense.group = 'Verification'
 generateLicenseReport.group = 'Verification'
 checkLicensePreparation.group = null
 
-check.dependsOn checkLicense
-
 
 cpdCheck {
+    dependsOn compileJavacc
     source = sourceSets.main.allJava
     exclude gradle.javaccExclude
 }
