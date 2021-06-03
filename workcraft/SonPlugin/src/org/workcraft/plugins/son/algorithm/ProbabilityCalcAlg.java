@@ -18,6 +18,7 @@ import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
 import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.plugins.son.util.ScenarioRef;
+import org.workcraft.plugins.son.util.MixedStepSequenceNode;
 
 import java.util.*;
 

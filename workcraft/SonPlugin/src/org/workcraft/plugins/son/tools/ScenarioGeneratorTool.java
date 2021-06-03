@@ -71,12 +71,11 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
 
     private JToggleButton startButton;
     private final ScenarioTable scenarioTable = new ScenarioTable();
+    private MixedStepSequenceLattice MSSLattice = null; // Ani - the mixed step sequence lattice of a SON
 
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
-        if (panel != null) {
-            return panel;
-        }
+        if (panel != null) { return panel; }
 
         startButton = GuiUtils.createIconToggleButton(GuiUtils.createIconFromSVG("images/son-scenario-start.svg"), "Generate");
         JButton resetButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-scenario-reset.svg"), "Reset");
@@ -242,12 +241,15 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         scenarioTable.setNet(net);
         ScenarioSaveList saveList = net.importScenarios();
         scenarioTable.setSaveList(saveList);
+        // Ani - If the mixed step sequence lattice exists, then initialise it deeply; otherwise ignore.
+        MSSLattice = net.getMixedStepSequenceLattice();
+        if (MSSLattice != null) { MSSLattice.initialise(); }
         selectScenario(editor, 0);
         editor.forceRedraw();
     }
 
     private void exportScenarios(final SON net) {
-        for (Scenario scenario: net.getScenarios()) {
+        for (Scenario scenario : net.getScenarios()) {
             net.remove(scenario);
         }
         int i = 1;

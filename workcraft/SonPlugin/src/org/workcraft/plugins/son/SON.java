@@ -15,9 +15,7 @@ import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.*;
 import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.exception.IncompatibleScenarioException;
-import org.workcraft.plugins.son.util.Scenario;
-import org.workcraft.plugins.son.util.ScenarioRef;
-import org.workcraft.plugins.son.util.ScenarioSaveList;
+import org.workcraft.plugins.son.util.*;
 import org.workcraft.serialisation.References;
 import org.workcraft.utils.Hierarchy;
 
@@ -484,6 +482,21 @@ public class SON extends AbstractMathModel {
         return result;
     }
 
+    // Mixed step sequence-based methods -- Ani
+    public MixedStepSequenceLattice getMixedStepSequenceLattice() {
+        Collection<MixedStepSequenceLattice> tmpMSSLatticeCollection = Hierarchy.getDescendantsOfType(getRoot(), MixedStepSequenceLattice.class);
+        if (tmpMSSLatticeCollection.isEmpty()) {
+            return null;
+        }
+        else {
+            return tmpMSSLatticeCollection.iterator().next();
+        }
+    }
+
+    public Collection<MixedStepSequenceNode> getMixedStepSequenceNodes() {
+        return Hierarchy.getDescendantsOfType(getRoot(), MixedStepSequenceNode.class);
+    }
+
     //Group based methods
     public Collection<Block> getBlocks() {
         return Hierarchy.getDescendantsOfType(getRoot(), Block.class);
@@ -504,9 +517,7 @@ public class SON extends AbstractMathModel {
         return result;
     }
 
-    public Collection<PageNode> getPageNodes() {
-        return Hierarchy.getDescendantsOfType(getRoot(), PageNode.class);
-    }
+    public Collection<PageNode> getPageNodes() { return Hierarchy.getDescendantsOfType(getRoot(), PageNode.class); }
 
     public Collection<ONGroup> getGroups() {
         return Hierarchy.getDescendantsOfType(getRoot(), ONGroup.class);
