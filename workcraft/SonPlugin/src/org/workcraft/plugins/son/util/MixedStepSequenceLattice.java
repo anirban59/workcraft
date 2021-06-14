@@ -28,10 +28,9 @@ public class MixedStepSequenceLattice extends MathNode {
     protected HashMap<String, MixedStepSequenceNode>  allMSSSteps     = new HashMap<>(); // The set of MixedStepSequenceNode objects of steps of the SON
     protected MixedStepSequenceNode   initialMSSNode = null; // The initial MixedStepSequenceNode object of the initial marking of the SON
 
+    public MixedStepSequenceLattice(SON net) { this.net = net; }
 
     public SON getNet() { return net; }
-
-    public void setNet(SON net) { this.net = net; }
 
     public void initialise() { // Initialises deeply the data structures of this pre-existing MSS lattice object.
         allMSSNodes.keySet().forEach(str -> allMSSNodes.put(str, (MixedStepSequenceNode) net.getNodeByReference(str)));

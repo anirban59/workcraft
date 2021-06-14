@@ -45,7 +45,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     protected RelationAlgorithm relationAlg;
     protected BSONAlg bsonAlg;
     protected SimulationAlg simuAlg;
-    private ErrorTracingAlg    errAlg;
+    private   ErrorTracingAlg errAlg;
 
     protected Collection<Path> sync;
     protected Map<Condition, Collection<Phase>> phases;

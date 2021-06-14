@@ -9,9 +9,11 @@ import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualSON;
+import org.workcraft.plugins.son.algorithm.PSONAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
+import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
@@ -72,6 +74,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
     private JToggleButton startButton;
     private final ScenarioTable scenarioTable = new ScenarioTable();
     private MixedStepSequenceLattice MSSLattice = null; // Ani - the mixed step sequence lattice of a SON
+    private PSONAlg psonAlg = null;
 
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
@@ -112,6 +115,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
 
         resetButton.addActionListener(event -> {
             startButton.setSelected(true);
+            psonAlg.ResetScenarioPath(); // Ani - resets the scenario path to contain a potential scenario.
             startScenario(editor);
         });
 
@@ -131,6 +135,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
                     }
                     saveList.add(newScenario);
                     saveList.setPosition(saveList.size() - 1);
+                    MSSLattice = psonAlg.AddScenarioPathToMSSLattice(makeScenarioID(saveList.size()), MSSLattice); // Ani
                 }
                 updateState(editor);
             }
@@ -243,19 +248,21 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         scenarioTable.setSaveList(saveList);
         // Ani - If the mixed step sequence lattice exists, then initialise it deeply; otherwise ignore.
         MSSLattice = net.getMixedStepSequenceLattice();
-        if (MSSLattice != null) { MSSLattice.initialise(); }
+        if (MSSLattice != null) {
+            MSSLattice.initialise();
+            // Ani - set and display the probabilities of the scenarios in the scenario table.
+        }
+        psonAlg = new PSONAlg(net);
         selectScenario(editor, 0);
         editor.forceRedraw();
     }
 
     private void exportScenarios(final SON net) {
-        for (Scenario scenario : net.getScenarios()) {
+        for (Scenario scenario : net.getScenarios())
             net.remove(scenario);
-        }
         int i = 1;
-        for (ScenarioRef scenario : scenarioTable.getSaveList()) {
-            net.createScenario("Scenario" + i++, scenario);
-        }
+        for (ScenarioRef scenario : scenarioTable.getSaveList())
+            net.createScenario(makeScenarioID(i++), scenario);
     }
 
     protected void scenarioGenerator(final GraphEditor editor) {
@@ -312,6 +319,17 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         final SON net = (SON) editor.getModel().getMathModel();
         ArrayList<PlaceNode> oldMarking = new ArrayList<>();
         oldMarking.addAll(getCurrentMarking(net));
+        HashSet<MathNode> tmpNodes = new HashSet<>();
+        if (psonAlg.ScenarioPathIsEmpty()) {
+            tmpNodes.addAll(oldMarking);
+            psonAlg.AddScenarioPathNodes(tmpNodes);
+            tmpNodes = new HashSet<>();
+        }
+        for (TransitionNode node : step)
+            if (node instanceof Event)
+                tmpNodes.add((MathNode) node);
+        psonAlg.AddScenarioPathNodes(tmpNodes);
+        tmpNodes = new HashSet<>();
         scenarioTable.setIsCellColor(false);
         super.executeEvents(editor, step);
 
@@ -325,6 +343,8 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         ArrayList<PlaceNode> marking = new ArrayList<>();
         marking.addAll(getCurrentMarking(net));
         marking.addAll(getSyncChannelPlaces(net, step));
+        tmpNodes.addAll(marking);
+        psonAlg.AddScenarioPathNodes(tmpNodes);
         markingRef.addAll(net.getNodeRefs(marking));
         for (String str : markingRef) {
             if (!scenarioRef.contains(str)) {
@@ -364,6 +384,11 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         for (Node node : nodes) {
             net.setForegroundColor(node, color);
         }
+    }
+
+    private String makeScenarioID(int index) {
+        final String ScenarioIDprefix = "Scenario";
+        return ScenarioIDprefix + index;
     }
 
     @Override
