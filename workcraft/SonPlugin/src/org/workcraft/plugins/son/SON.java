@@ -24,6 +24,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Map;
 
 @VisualClass(VisualSON.class)
 public class SON extends AbstractMathModel {
@@ -561,6 +562,14 @@ public class SON extends AbstractMathModel {
             result.append(']');
         }
         return result.toString();
+    }
+
+    public Object getKeyFromValue(Map map, Object value) { // Courtesy of Rupesh Yadav from https://stackoverflow.com
+        for (Object key : map.keySet())
+            if (map.get(key).equals(value))
+                return key;
+
+        return null;
     }
 
 }

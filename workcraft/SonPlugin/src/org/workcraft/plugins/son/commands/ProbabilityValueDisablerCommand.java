@@ -42,8 +42,8 @@ public class ProbabilityValueDisablerCommand implements Command {
         /** Ani: the following is a hack to test my methods, which must be removed after the methods can be invoked
          * from my menu items.
          **/
-        ProbabilityCalcAlg pca = new ProbabilityCalcAlg(net);
-        pca.CalcBaseLevelONsProbability();
+        //ProbabilityCalcAlg pca = new ProbabilityCalcAlg(net);
+        //pca.CalcBaseLevelONsProbability();
     }
 
 }

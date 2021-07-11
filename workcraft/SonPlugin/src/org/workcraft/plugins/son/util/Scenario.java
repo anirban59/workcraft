@@ -6,7 +6,7 @@ import org.workcraft.dom.math.MathNode;
 public class Scenario extends MathNode {
 
     private String elements;
-    private double probability = 1.0; // probability of this scenario
+    private double probability = 0.0; // probability of this scenario
 
     public String getScenario() {
         return this.elements;

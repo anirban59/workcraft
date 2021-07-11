@@ -23,7 +23,7 @@ public class Event extends MathNode implements TransitionNode, Time, Probability
     private Interval duration = new Interval(0, 0);
 
     private int     weight = 1;  // user-specified weight of this Event
-    private double  probability; // probability of occurrence of this Event
+    private double  probability = 0.0; // probability of occurrence of this Event
     protected Color probabilityColor = Color.BLACK;
 
     @Override

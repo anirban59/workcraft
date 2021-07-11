@@ -37,15 +37,23 @@ public class PSONAlg extends RelationAlgorithm {
     }
 
     public MixedStepSequenceLattice AddScenarioPathToMSSLattice(String scenarioID, MixedStepSequenceLattice MSSLattice) {
-        if (ScenarioPathIsEmpty()) {
+        String duplicateScenarioID = null;
+
+        if (ScenarioPath.isEmpty()) {
             throw new RuntimeException("ERROR: ScenarioPath is empty.");
         } else if (!ScenarioPathIsMaximal()) {
             throw new RuntimeException("ERROR: ScenarioPath is NOT maximal.");
+        } else if (MSSLattice == null) {
+            MSSLattice = new MixedStepSequenceLattice(net);
+            MSSLattice.addFirstMSS(scenarioID, ScenarioPath);
+            MSSLattice.TestPrintScenarioProbabilities(); // Remove after implementation of probabilitity display in the scenario table.
+        } else if ((duplicateScenarioID = MSSLattice.ScenarioPathDuplicate(ScenarioPath)) != null) {
+            throw new RuntimeException("ERROR: ScenarioPath is a duplicate of scenario " + duplicateScenarioID);
         } else {
-            if (MSSLattice == null) {
-                MSSLattice = new MixedStepSequenceLattice(net);
-            }
+            MSSLattice.addMSS(scenarioID, ScenarioPath);
+            MSSLattice.TestPrintScenarioProbabilities(); // Remove after implementation of probabilitity display in the scenario table.
         }
+
         return MSSLattice;
     }
 

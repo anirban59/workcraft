@@ -23,7 +23,7 @@ public class PlaceNode extends MathNode implements Time, Probability {
     private boolean marked = false;
     private Color tokenColor = VisualCommonSettings.getBorderColor();
 
-    private double  probability; // probability of occurrence of this PlaceNode
+    private double  probability = 0.0; // probability of occurrence of this PlaceNode
     protected Color probabilityColor = Color.BLACK;
 
     public void setMarked(boolean value) {
