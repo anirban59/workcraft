@@ -22,19 +22,20 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SynthesisCommandsTests {
+class SynthesisCommandsTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         PetrifySettings.setCommand(BackendUtils.getTemplateToolPath("PetrifyTools", "petrify"));
@@ -42,89 +43,99 @@ public class SynthesisCommandsTests {
     }
 
     @Test
-    public void bufferComplexGateSynthesis() {
+    void irreducibleConflictComplexGateSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "irreducible_conflict.stg.work");
+        testComplexGateSynthesisCommand(workName, null);
+    }
+
+    @Test
+    void bufferComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-compact.stg.work");
         testComplexGateSynthesisCommand(workName, 1);
     }
 
     @Test
-    public void celementComplexGateSynthesis() {
+    void celementComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "celement-compact.stg.work");
         testComplexGateSynthesisCommand(workName, 1);
     }
 
     @Test
-    public void constComplexGateSynthesis() {
+    void constComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "const.stg.work");
         testComplexGateSynthesisCommand(workName, 3);
     }
 
     @Test
-    public void busCtrlComplexGateSynthesis() {
+    void busCtrlComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "bus_ctrl.stg.work");
         testComplexGateSynthesisCommand(workName, 2);
     }
 
     @Test
-    public void edcComplexGateSynthesis() {
+    void edcComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "edc.stg.work");
         testComplexGateSynthesisCommand(workName, 7);
     }
 
     @Test
-    public void arbitrationComplexGateSynthesis() {
+    void arbitrationComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3-hierarchy.stg.work");
         testComplexGateSynthesisCommand(workName, 6);
     }
 
     @Test
-    public void duplicatorCscHierComplexGateSynthesis() {
+    void duplicatorCscHierComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "duplicator-hier-csc.stg.work");
         testComplexGateSynthesisCommand(workName, 4);
     }
 
-    private void testComplexGateSynthesisCommand(String workName, int expectedGateCount) {
+    private void testComplexGateSynthesisCommand(String workName, Integer expectedGateCount) {
         try {
             checkSynthesisCommand(ComplexGateSynthesisCommand.class, workName, expectedGateCount);
-        } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
+        } catch (DeserialisationException | InstantiationException | IllegalAccessException
+                | InvocationTargetException | NoSuchMethodException e) {
+
             e.printStackTrace();
         }
     }
 
     @Test
-    public void busCtrlGeneralisedCelementSynthesis() {
+    void busCtrlGeneralisedCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "bus_ctrl.stg.work");
         testGeneralisedCelementSynthesisCommand(workName, 2);
     }
 
     @Test
-    public void edcGeneralisedCelementSynthesis() {
+    void edcGeneralisedCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "edc.stg.work");
         testGeneralisedCelementSynthesisCommand(workName, 7);
     }
 
     @Test
-    public void arbitrationGeneralisedCelementSynthesis() {
+    void arbitrationGeneralisedCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3-hierarchy.stg.work");
         testGeneralisedCelementSynthesisCommand(workName, 6);
     }
 
     @Test
-    public void duplicatorCscHierGeneralisedCelementSynthesis() {
+    void duplicatorCscHierGeneralisedCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "duplicator-hier-csc.stg.work");
         testGeneralisedCelementSynthesisCommand(workName, 4);
     }
 
-    private void testGeneralisedCelementSynthesisCommand(String workName, int expectedGateCount) {
+    private void testGeneralisedCelementSynthesisCommand(String workName, Integer expectedGateCount) {
         try {
             checkSynthesisCommand(GeneralisedCelementSynthesisCommand.class, workName, expectedGateCount);
-        } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
+        } catch (DeserialisationException | InstantiationException | IllegalAccessException
+                | InvocationTargetException | NoSuchMethodException e) {
+
             e.printStackTrace();
         }
     }
 
     @Test
-    public void busCtrlStandardCelementSynthesis() {
+    void busCtrlStandardCelementSynthesis() {
         // FIXME: Skip this test on Windows as petrify.exe produces significantly different circuit
         Assumptions.assumeFalse(DesktopApi.getOs().isWindows());
         String workName = PackageUtils.getPackagePath(getClass(), "bus_ctrl.stg.work");
@@ -132,98 +143,107 @@ public class SynthesisCommandsTests {
     }
 
     @Test
-    public void edcStandardCelementSynthesis() {
+    void edcStandardCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "edc.stg.work");
         testStandardCelementSynthesisCommand(workName, 7);
     }
 
     @Test
-    public void arbitrationStandardCelementSynthesis() {
+    void arbitrationStandardCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3-hierarchy.stg.work");
         testStandardCelementSynthesisCommand(workName, 6);
     }
 
     @Test
-    public void duplicatorCscHierStandardCelementSynthesis() {
+    void duplicatorCscHierStandardCelementSynthesis() {
         // FIXME: Skip this test on Windows as petrify.exe produces significantly different circuit
         Assumptions.assumeFalse(DesktopApi.getOs().isWindows());
         String workName = PackageUtils.getPackagePath(getClass(), "duplicator-hier-csc.stg.work");
         testStandardCelementSynthesisCommand(workName, 8, 9);
     }
 
-    private void testStandardCelementSynthesisCommand(String workName, int expectedGateCount) {
+    private void testStandardCelementSynthesisCommand(String workName, Integer expectedGateCount) {
         testStandardCelementSynthesisCommand(workName, expectedGateCount, expectedGateCount);
     }
 
     private void testStandardCelementSynthesisCommand(String workName, int minGateCount, int maxGateCount) {
         try {
-            checkSynthesisCommand(StandardCelementSynthesisCommand.class, workName,
-                    minGateCount, maxGateCount);
-        } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
+            checkSynthesisCommand(StandardCelementSynthesisCommand.class, workName, minGateCount, maxGateCount);
+        } catch (DeserialisationException | InstantiationException | IllegalAccessException
+                | NoSuchMethodException | InvocationTargetException e) {
+
             e.printStackTrace();
         }
     }
 
     @Test
-    public void bufferTechnologyMappingSynthesis() {
+    void irreducibleConflictTechnologyMappingSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "irreducible_conflict.stg.work");
+        testTechnologyMappingSynthesisCommand(workName, null);
+    }
+
+    @Test
+    void bufferTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-compact.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 1);
     }
 
     @Test
-    public void celementTechnologyMappingSynthesis() {
+    void celementTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "celement-compact.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 1);
     }
 
     @Test
-    public void constTechnologyMappingSynthesis() {
+    void constTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "const.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 3);
     }
 
     @Test
-    public void busCtrlTechnologyMappingSynthesis() {
+    void busCtrlTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "bus_ctrl.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 4);
     }
 
     @Test
-    public void edcTechnologyMappingSynthesis() {
+    void edcTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "edc.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 7);
     }
 
     @Test
-    public void arbitrationTechnologyMappingSynthesis() {
+    void arbitrationTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3-hierarchy.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 6);
     }
 
     @Test
-    public void duplicatorCscHierTechnologyMappingSynthesis() {
+    void duplicatorCscHierTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "duplicator-hier-csc.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 13);
     }
 
-    private void testTechnologyMappingSynthesisCommand(String workName, int expectedGateCount) {
+    private void testTechnologyMappingSynthesisCommand(String workName, Integer expectedGateCount) {
         try {
             checkSynthesisCommand(TechnologyMappingSynthesisCommand.class, workName, expectedGateCount);
-        } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
+        } catch (DeserialisationException | InstantiationException | IllegalAccessException
+                | InvocationTargetException | NoSuchMethodException e) {
+
             e.printStackTrace();
         }
     }
 
     private <C extends AbstractSynthesisCommand> void checkSynthesisCommand(Class<C> cls, String workName,
-            int expectedComponentCount)
-            throws DeserialisationException, InstantiationException, IllegalAccessException {
+            Integer expectedComponentCount) throws DeserialisationException, InstantiationException,
+            IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
         checkSynthesisCommand(cls, workName, expectedComponentCount, expectedComponentCount);
     }
 
     private <C extends AbstractSynthesisCommand> void checkSynthesisCommand(Class<C> cls, String workName,
-            int minComponentCount, int maxComponentCount)
-            throws DeserialisationException, InstantiationException, IllegalAccessException {
+            Integer minComponentCount, Integer maxComponentCount) throws DeserialisationException, InstantiationException,
+            IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -244,40 +264,44 @@ public class SynthesisCommandsTests {
             }
         }
 
-        C command = cls.newInstance();
+        C command = cls.getDeclaredConstructor().newInstance();
         WorkspaceEntry dstWe = command.execute(srcWe);
-        Circuit dstCircuit = WorkspaceUtils.getAs(dstWe, Circuit.class);
-        Set<String> dstInputs = new HashSet<>();
-        Set<String> dstOutputs = new HashSet<>();
-        // Process primary ports
-        for (Contact port: dstCircuit.getPorts()) {
-            String dstSignal = dstCircuit.getNodeReference(port);
-            if (port.isInput()) {
-                dstInputs.add(dstSignal);
-            }
-            if (port.isOutput()) {
-                dstOutputs.add(dstSignal);
-            }
-        }
-        // Process environment pins
-        Set<String> dstPageRefs = new HashSet<>();
-        for (PageNode page: Hierarchy.getChildrenOfType(dstCircuit.getRoot(), PageNode.class)) {
-            for (Contact port: dstCircuit.getPorts()) {
-                if (port.getParent() == page) {
-                    dstPageRefs.add(dstCircuit.getNodeReference(page));
-                    break;
+        if ((minComponentCount == null) || (maxComponentCount == null)) {
+            Assertions.assertNull(dstWe);
+        } else {
+            Circuit dstCircuit = WorkspaceUtils.getAs(dstWe, Circuit.class);
+            Set<String> dstInputs = new HashSet<>();
+            Set<String> dstOutputs = new HashSet<>();
+            // Process primary ports
+            for (Contact port : dstCircuit.getPorts()) {
+                String dstSignal = dstCircuit.getNodeReference(port);
+                if (port.isInput()) {
+                    dstInputs.add(dstSignal);
+                }
+                if (port.isOutput()) {
+                    dstOutputs.add(dstSignal);
                 }
             }
-        }
-        Set<String> dstMutexes = getMutexComponentReferences(dstCircuit);
-        int dstComponentCount = dstCircuit.getFunctionComponents().size();
+            // Process environment pins
+            Set<String> dstPageRefs = new HashSet<>();
+            for (PageNode page : Hierarchy.getChildrenOfType(dstCircuit.getRoot(), PageNode.class)) {
+                for (Contact port : dstCircuit.getPorts()) {
+                    if (port.getParent() == page) {
+                        dstPageRefs.add(dstCircuit.getNodeReference(page));
+                        break;
+                    }
+                }
+            }
+            Set<String> dstMutexes = getMutexComponentReferences(dstCircuit);
+            int dstComponentCount = dstCircuit.getFunctionComponents().size();
 
-        Assertions.assertEquals(srcInputs, dstInputs);
-        Assertions.assertEquals(srcOutputs, dstOutputs);
-        Assertions.assertEquals(srcMutexes, dstMutexes);
-        Assertions.assertTrue(minComponentCount <= dstComponentCount);
-        Assertions.assertTrue(maxComponentCount >= dstComponentCount);
-        Assertions.assertEquals(srcPageRefs, dstPageRefs);
+            Assertions.assertEquals(srcInputs, dstInputs);
+            Assertions.assertEquals(srcOutputs, dstOutputs);
+            Assertions.assertEquals(srcMutexes, dstMutexes);
+            Assertions.assertTrue(minComponentCount <= dstComponentCount);
+            Assertions.assertTrue(maxComponentCount >= dstComponentCount);
+            Assertions.assertEquals(srcPageRefs, dstPageRefs);
+        }
     }
 
     private Set<String> getMutexComponentReferences(Circuit circuit) {

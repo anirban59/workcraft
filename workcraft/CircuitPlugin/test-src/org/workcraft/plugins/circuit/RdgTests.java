@@ -21,22 +21,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class RdgTests {
+class RdgTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testAcyclicRdg() throws DeserialisationException {
+    void testAcyclicRdg() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "rdg-acyclic/top.circuit.work");
         testRdg(workName, 4, 6, 4, true);
     }
 
     @Test
-    public void testCyclicRdg() throws DeserialisationException {
+    void testCyclicRdg() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "rdg-cyclic/top.circuit.work");
         testRdg(workName, 4, 6, 5, false);
     }
@@ -53,14 +53,14 @@ public class RdgTests {
         RefinementDependencyGraph rdg = new RefinementDependencyGraph(srcWe);
         Assertions.assertEquals(vertexCount, rdg.getVertices().size());
         Assertions.assertEquals(edgeCount, rdg.getVertices().stream()
-                .map(rdg::getDependencyMap)
+                .map(rdg::getInstanceDependencyMap)
                 .mapToInt(Map::size)
                 .sum());
 
         Map<File, Set<File>> graph = rdg.getSimpleGraph();
         Assertions.assertEquals(vertexCount, graph.size());
         Assertions.assertEquals(metaEdgeCount, rdg.getVertices().stream()
-                .mapToInt(f -> rdg.getDependencySet(f).size())
+                .mapToInt(f -> rdg.getDependencies(f).size())
                 .sum());
 
         RdgToPetriConverter converter = new RdgToPetriConverter(rdg);

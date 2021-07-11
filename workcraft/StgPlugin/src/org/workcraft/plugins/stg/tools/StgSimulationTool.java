@@ -6,7 +6,6 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.controls.FlatHeaderRenderer;
 import org.workcraft.gui.properties.BooleanCellEditor;
@@ -59,13 +58,12 @@ public class StgSimulationTool extends PetriSimulationTool {
     private static final int COLUMN_COLOR = 3;
     private static final String GRAY_CODE = ColorUtils.getHexRGB(Color.GRAY);
 
-    protected HashMap<String, SignalData> signalDataMap = new HashMap<>();
-    protected LinkedList<String> signals = new LinkedList<>();
+    protected Map<String, SignalData> signalDataMap = new HashMap<>();
+    protected List<String> signals = new LinkedList<>();
     protected JTable stateTable;
     private JPanel panel;
-    private HashMap<String, Boolean> initialSignalState = new HashMap<>();
+    private Map<String, Boolean> initialSignalState = new HashMap<>();
     private StgToStgConverter converter;
-    private Map<String, MathNode> refToUnderlyingNodeMap;
 
     public StgSimulationTool() {
         super(true);
@@ -376,35 +374,12 @@ public class StgSimulationTool extends PetriSimulationTool {
 
     @Override
     public void generateUnderlyingModel(WorkspaceEntry we) {
-        VisualStg srcStg = WorkspaceUtils.getAs(we, VisualStg.class);
-        converter = new StgToStgConverter(srcStg);
-
-        refToUnderlyingNodeMap = new HashMap<>();
-        for (VisualTransition srcTransition : srcStg.getVisualTransitions()) {
-            String srcRef = srcStg.getMathReference(srcTransition);
-            VisualNode dstNode = converter.getSrcToDstNode(srcTransition);
-            if (dstNode instanceof VisualComponent) {
-                VisualComponent dstComponent = (VisualComponent) dstNode;
-                refToUnderlyingNodeMap.put(srcRef, dstComponent.getReferencedComponent());
-            }
-        }
+        converter = new StgToStgConverter(WorkspaceUtils.getAs(we, VisualStg.class));
     }
 
     @Override
     public Stg getUnderlyingModel() {
         return converter.getDstModel().getMathModel();
-    }
-
-    @Override
-    public MathNode getUnderlyingNode(String ref) {
-        MathNode result = null;
-        if (refToUnderlyingNodeMap != null) {
-            result = refToUnderlyingNodeMap.get(ref);
-        }
-        if (result == null) {
-            result = super.getUnderlyingNode(ref);
-        }
-        return result;
     }
 
     @Override
@@ -494,9 +469,9 @@ public class StgSimulationTool extends PetriSimulationTool {
         setStatePaneVisibility(true);
     }
 
-    private HashMap<String, Boolean> getInitialState() {
+    private Map<String, Boolean> getInitialState() {
         Stg stg = getUnderlyingModel();
-        HashMap<String, Boolean> result = StgUtils.guessInitialStateFromSignalPlaces(stg);
+        Map<String, Boolean> result = StgUtils.guessInitialStateFromSignalPlaces(stg);
         Set<String> signalRefs = stg.getSignalReferences();
         if (result.size() < signalRefs.size()) {
             result = StgUtils.getInitialState(stg, 500);
@@ -664,12 +639,18 @@ public class StgSimulationTool extends PetriSimulationTool {
     private VisualImplicitPlaceArc getUnderlyingVisualImplicitArc(VisualModel model, VisualConnection connection) {
         VisualModel underlyingVisualModel = getUnderlyingVisualModel();
         if ((connection instanceof VisualImplicitPlaceArc) && (underlyingVisualModel instanceof VisualStg)) {
-            String ref = model.getMathReference(connection);
-            VisualStg underlyingVisualStg = (VisualStg) underlyingVisualModel;
-            for (VisualImplicitPlaceArc underlyingVisualArc : underlyingVisualStg.getVisualImplicitPlaceArcs()) {
-                if (ref.equals(underlyingVisualModel.getMathReference(underlyingVisualArc))) {
-                    return underlyingVisualArc;
-                }
+            String firstRef = model.getMathReference(connection.getFirst());
+            MathNode firstUnderlyingNode = getUnderlyingNode(firstRef);
+            VisualComponent firstVisualComponent = underlyingVisualModel.getVisualComponent(firstUnderlyingNode, VisualComponent.class);
+
+            String secondRef = model.getMathReference(connection.getSecond());
+            MathNode secondUnderlyingNode = getUnderlyingNode(secondRef);
+            VisualComponent secondVisualComponent = underlyingVisualModel.getVisualComponent(secondUnderlyingNode, VisualComponent.class);
+
+            VisualConnection result = underlyingVisualModel.getConnection(firstVisualComponent, secondVisualComponent);
+
+            if (result instanceof VisualImplicitPlaceArc) {
+                return (VisualImplicitPlaceArc) result;
             }
         }
         return null;

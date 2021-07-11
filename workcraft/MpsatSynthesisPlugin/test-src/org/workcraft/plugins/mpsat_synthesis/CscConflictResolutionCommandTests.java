@@ -21,30 +21,36 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CscConflictResolutionCommandTests {
+class CscConflictResolutionCommandTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         MpsatSynthesisSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
     }
 
     @Test
-    public void testVmeCscConflictResolution() throws DeserialisationException {
+    void testVmeCscConflictResolution() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testCscConflictResolutionCommand(workName, new String[]{"csc1", "csc"});
     }
 
     @Test
-    public void testCycleCscConflictResolution() throws DeserialisationException {
+    void testCycleCscConflictResolution() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "cycle-mutex.stg.work");
         testCscConflictResolutionCommand(workName, new String[] {});
+    }
+
+    @Test
+    void testIrreducibleConflictResolution() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "irreducible_conflict.stg.work");
+        testCscConflictResolutionCommand(workName, null);
     }
 
     private void testCscConflictResolutionCommand(String workName, String[] cscSignals)
@@ -64,19 +70,23 @@ public class CscConflictResolutionCommandTests {
         CscConflictResolutionCommand command = new CscConflictResolutionCommand();
         WorkspaceEntry dstWe = command.execute(srcWe);
 
-        Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
-        Set<String> dstInputs = dstStg.getSignalReferences(Signal.Type.INPUT);
-        Set<String> dstInternals = dstStg.getSignalReferences(Signal.Type.INTERNAL);
-        Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
-        Set<String> dstMutexes = MutexUtils.getMutexPlaceReferences(dstStg);
+        if (cscSignals == null) {
+            Assertions.assertNull(dstWe);
+        } else {
+            Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
+            Set<String> dstInputs = dstStg.getSignalReferences(Signal.Type.INPUT);
+            Set<String> dstInternals = dstStg.getSignalReferences(Signal.Type.INTERNAL);
+            Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
+            Set<String> dstMutexes = MutexUtils.getMutexPlaceReferences(dstStg);
 
-        Set<String> expInternals = new HashSet<>(srcInternals);
-        expInternals.addAll(Arrays.asList(cscSignals));
+            Set<String> expInternals = new HashSet<>(srcInternals);
+            expInternals.addAll(Arrays.asList(cscSignals));
 
-        Assertions.assertEquals(srcInputs, dstInputs);
-        Assertions.assertEquals(expInternals, dstInternals);
-        Assertions.assertEquals(srcOutputs, dstOutputs);
-        Assertions.assertEquals(srcMutexes, dstMutexes);
+            Assertions.assertEquals(srcInputs, dstInputs);
+            Assertions.assertEquals(expInternals, dstInternals);
+            Assertions.assertEquals(srcOutputs, dstOutputs);
+            Assertions.assertEquals(srcMutexes, dstMutexes);
+        }
     }
 
 }
